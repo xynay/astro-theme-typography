@@ -3,7 +3,7 @@ import '~/styles/index.css'
 import '~/styles/heti.min.css'
 import Header from '~/components/Header.astro'
 import Footer from '~/components/Footer.astro'
-import { ViewTransitions } from 'astro:transitions';
+import { ViewTransitions } from 'astro:transitions'
 import { SEO } from 'astro-seo'
 import { getImage } from 'astro:assets'
 
@@ -14,59 +14,27 @@ interface Props {
 }
 
 const { title: propsTitle, desc: propsDesc, banner } = Astro.props
-const { title: configTitle, desc: configDesc, website: canonical } = Astro.locals.config
-const { header } = Astro.locals.config
+const { config: { title: configTitle, desc: configDesc, website: canonical }, header } = Astro.locals
 
-const title = propsTitle ?? configTitle
-const desc = propsDesc ?? configDesc
+// 合并标题和描述，使用空字符串作为回退
+const title = propsTitle ?? configTitle ?? ''
+const desc = propsDesc ?? configDesc ?? ''
 
-const image = banner && await getImage({ src: banner, format: "jpeg" })
-const optimizedImage = new URL(image?.src ?? "/placeholder.png", Astro.url).toString()
+// 图片处理封装为独立函数
+async function getOptimizedImage() {
+  if (!banner) return '/placeholder.png'
+  
+  try {
+    const image = await getImage({ src: banner, format: "jpeg" })
+    return new URL(image.src, Astro.url).toString()
+  } catch (error) {
+    console.error('Image processing failed:', error)
+    return new URL("/placeholder.png", Astro.url).toString()
+  }
+}
 
+const optimizedImage = await getOptimizedImage()
+
+// 固定推特卡片类型，动态内容后置
 const twitterMeta = [
-  { name: "twitter:image:src", content: optimizedImage },
-  { name: "twitter:image:alt", content: desc },
-  { name: "twitter:creator", content: header.twitter },
-  { name: "twitter:site", content: header.twitter },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: title },
-  { name: "twitter:description", content: desc },
-]
----
-
-<html lang="en">
-  <head>
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <ViewTransitions />
-    <SEO
-      charset="utf-8"
-      title={title}
-      description={desc}
-      extend={{
-        link: [{ rel: 'icon', href: '/favicon.ico', type: 'image/svg+xml' }],
-        meta: twitterMeta,
-      }}
-      openGraph={{
-        basic: {
-          title,
-          type: "article",
-          image: optimizedImage,
-          url: canonical,
-        }
-      }}
-    />
-  </head>
-  <body>
-    <div un-max-lg="animate-fadein-down" un-lg="flex flex-row-reverse justify-between gap-4 px-8 mx-auto max-w-6xl" class="container contain-layout m-a">
-      <div un-lg="sticky top-0 h-screen py-20 animate-fadein-left gap-8" un-lg:flex="~ col justify-between items-start gap-4" class="p-7.5">
-        <Header />
-        <Footer class="max-lg:hidden" />
-      </div>
-      <main un-lg="py-20 min-w-xl animate-fadein-down" class="p-7.5">
-        <slot />
-      </main>
-      <Footer class="lg:hidden p-7.5" />
-    </div>
-  </body>
-</html>
+  { name: "twitter:card", content: "summary_lar
