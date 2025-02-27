@@ -27,48 +27,45 @@ export default defineConfig({
     build: {
       rollupOptions: {
         output: {
+          // 不再合并所有 JS 文件为一个文件
           manualChunks: (id) => {
-            // 精细化代码分块
             if (id.includes('node_modules')) {
               if (id.includes('react')) return 'react-vendor';
               if (id.includes('@astro')) return 'astro-vendor';
               return 'vendor';
             }
-            if (id.includes('src/layouts')) return 'layouts'; // 布局代码单独分块
-            if (id.includes('src/components')) return 'components'; // 组件库单独分块
           },
           entryFileNames: 'js/[name].[hash].js',
           chunkFileNames: 'js/[name].[hash].js',
           assetFileNames: ({ name }) => {
-            // 仅保留必要资源分类
-            return /\.css$/.test(name ?? '') 
-              ? 'css/[name].[hash][extname]'
-              : 'assets/[name].[hash][extname]';
+            if (/\.css$/.test(name ?? '')) {
+              return 'css/[name].[hash][extname]';
+            }
+            if (/\.(png|jpe?g|gif|svg|webp|ico)$/.test(name ?? '')) {
+              return 'images/[name].[hash][extname]';
+            }
+            return 'assets/[name].[hash][extname]';
           },
         },
       },
+      // 启用 minification 和 tree-shaking
       minify: 'terser',
       terserOptions: {
         compress: {
           drop_console: true,
-          pure_funcs: ['console.info'] // 保留特定日志
         },
-        format: {
-          comments: false // 删除所有注释
-        }
       },
     },
+    // 启用构建时优化
     optimizeDeps: {
       include: ['react', 'react-dom'],
-      exclude: ['@types/**'], 
     },
-    plugins: [
-      // CSS Tree Shaking
-      require('vite-plugin-purgecss')({
-        content: ['./src/**/*.{astro,mdx,jsx,tsx}'],
-        safelist: [/data-*/], // 保留数据属性样式
-      }),
-    ],
   },
-  // 服务端渲染缓存策略
+  
+  // 考虑添加图片优化集成
+  // import image from '@astrojs/image';
+  // integrations: [
+  //   // ... existing integrations ...
+  //   image(),
+  // ],
 });
