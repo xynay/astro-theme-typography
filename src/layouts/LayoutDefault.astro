@@ -14,7 +14,14 @@ interface Props {
 }
 
 const { title: propsTitle, desc: propsDesc, banner } = Astro.props
-const { config: { title: configTitle, desc: configDesc, website: canonical }, header } = Astro.locals
+const { 
+  config: { 
+    title: configTitle, 
+    desc: configDesc, 
+    website: canonical,
+    header 
+  } 
+} = Astro.locals
 
 // 合并标题和描述，使用空字符串作为回退
 const title = propsTitle ?? configTitle ?? ''
@@ -45,7 +52,7 @@ const twitterMeta = [
 ]
 
 // 仅在有效时添加创作者信息
-if (header.twitter) {
+if (header?.twitter) {
   twitterMeta.push(
     { name: "twitter:creator", content: header.twitter },
     { name: "twitter:site", content: header.twitter }
