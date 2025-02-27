@@ -7,47 +7,65 @@ import mdx from "@astrojs/mdx";
 
 export default defineConfig({
   site: THEME_CONFIG.website,
-  prefetch: {
-    mode: 'visible', // 只对可见链接预加载
-  },
+  prefetch: true,
   markdown: {
     shikiConfig: {
       theme: 'one-dark-pro',
-      langs: ['javascript', 'typescript', 'html', 'markdown'],
+      langs: [],
       wrap: true,
-      highlight: {
-        strategy: 'server', // 让 Astro 在服务器端完成代码高亮
-      },
     },
   },
   integrations: [
     UnoCSS({
-      injectReset: false, // 关闭运行时 CSS 重置，改为手动引入
+      injectReset: true
     }),
-    robotsTxt({
-      policy: [{ userAgent: '*', allow: '/' }],
-    }),
+    robotsTxt(),
     sitemap(),
-    mdx(),
+    mdx()
   ],
   vite: {
     build: {
       rollupOptions: {
         output: {
+          // 不再合并所有 JS 文件为一个文件
           manualChunks: (id) => {
-            if (id.includes('node_modules')) return 'vendor';
-            if (id.includes('.mdx')) return 'mdx';
-            return 'app';
+            if (id.includes('node_modules')) {
+              if (id.includes('react')) return 'react-vendor';
+              if (id.includes('@astro')) return 'astro-vendor';
+              return 'vendor';
+            }
+          },
+          entryFileNames: 'js/[name].[hash].js',
+          chunkFileNames: 'js/[name].[hash].js',
+          assetFileNames: ({ name }) => {
+            if (/\.css$/.test(name ?? '')) {
+              return 'css/[name].[hash][extname]';
+            }
+            if (/\.(png|jpe?g|gif|svg|webp|ico)$/.test(name ?? '')) {
+              return 'images/[name].[hash][extname]';
+            }
+            return 'assets/[name].[hash][extname]';
           },
         },
       },
-      minify: process.env.NODE_ENV === 'production' ? 'terser' : false, // 仅在生产环境压缩
+      // 启用 minification 和 tree-shaking
+      minify: 'terser',
       terserOptions: {
         compress: {
-          drop_debugger: true, // 保留 console.log，避免额外计算开销
+          drop_console: true,
         },
       },
-      treeshake: true,
+    },
+    // 启用构建时优化
+    optimizeDeps: {
+      include: ['react', 'react-dom'],
     },
   },
+  
+  // 考虑添加图片优化集成
+  // import image from '@astrojs/image';
+  // integrations: [
+  //   // ... existing integrations ...
+  //   image(),
+  // ],
 });
