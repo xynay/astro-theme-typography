@@ -7,43 +7,27 @@ import mdx from "@astrojs/mdx";
 
 export default defineConfig({
   site: THEME_CONFIG.website,
-  prefetch: true,
+  prefetch: {
+    mode: 'visible', // 只对可见链接预加载
+  },
   markdown: {
     shikiConfig: {
       theme: 'one-dark-pro',
-      langs: ['javascript', 'typescript', 'html', 'markdown'], // 仅加载必要的语言支持
+      langs: ['javascript', 'typescript', 'html', 'markdown'],
       wrap: true,
       highlight: {
-        strategy: 'inline', // 优化高亮性能
+        strategy: 'server', // 让 Astro 在服务器端完成代码高亮
       },
     },
   },
   integrations: [
     UnoCSS({
-      injectReset: true,
-      layer: {
-        base: 'base',
-        components: 'components',
-        utils: 'utils',
-      },
-      variant: {
-        responsive: ['md', 'lg'],
-        state: ['hover', 'focus'],
-      },
+      injectReset: false, // 关闭运行时 CSS 重置，改为手动引入
     }),
     robotsTxt({
-      policy: [
-        {
-          userAgent: '*',
-          allow: '/',
-        },
-      ],
+      policy: [{ userAgent: '*', allow: '/' }],
     }),
-    sitemap({
-      options: {
-        limit: 50000, // 优化 sitemap 文件大小
-      },
-    }),
+    sitemap(),
     mdx(),
   ],
   vite: {
@@ -51,57 +35,19 @@ export default defineConfig({
       rollupOptions: {
         output: {
           manualChunks: (id) => {
-            if (id.includes('node_modules')) {
-              if (id.includes('react')) return 'react-vendor';
-              if (id.includes('@astro')) return 'astro-vendor';
-              return 'vendor';
-            }
+            if (id.includes('node_modules')) return 'vendor';
             if (id.includes('.mdx')) return 'mdx';
             return 'app';
           },
-          entryFileNames: 'js/[name].[hash].js',
-          chunkFileNames: 'js/[name].[hash].js',
-          assetFileNames: ({ name }) => {
-            if (/\.css$/.test(name ?? '')) {
-              return 'css/[name].[hash][extname]';
-            }
-            if (/\.(png|jpe?g|gif|svg|webp|ico)$/.test(name ?? '')) {
-              return 'images/[name].[hash][extname]';
-            }
-            return 'assets/[name].[hash][extname]';
-          },
         },
       },
-      minify: 'terser',
+      minify: process.env.NODE_ENV === 'production' ? 'terser' : false, // 仅在生产环境压缩
       terserOptions: {
         compress: {
-          drop_console: true,
-          drop_debugger: true,
-        },
-        mangle: {
-          properties: {
-            regex: /^__/,
-          },
+          drop_debugger: true, // 保留 console.log，避免额外计算开销
         },
       },
       treeshake: true,
-      strip: true,
     },
-    optimizeDeps: {
-      include: ['react', 'react-dom'],
-      exclude: ['@astrojs/*'], // 避免优化 Astro 核心依赖
-    },
-  },
-  dev: {
-    hot: true,
-    client: {
-      logging: 'error', // 减少开发日志输出
-    },
-  },
-  prerender: {
-    crawl: true,
-    routes: [
-      '/**',
-    ],
   },
 });
