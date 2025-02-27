@@ -11,29 +11,53 @@ export default defineConfig({
   markdown: {
     shikiConfig: {
       theme: 'one-dark-pro',
-      langs: [],
+      langs: ['javascript', 'typescript', 'html', 'markdown'], // 仅加载必要的语言支持
       wrap: true,
+      highlight: {
+        strategy: 'inline', // 优化高亮性能
+      },
     },
   },
   integrations: [
     UnoCSS({
-      injectReset: true
+      injectReset: true,
+      layer: {
+        base: 'base',
+        components: 'components',
+        utils: 'utils',
+      },
+      variant: {
+        responsive: ['md', 'lg'],
+        state: ['hover', 'focus'],
+      },
     }),
-    robotsTxt(),
-    sitemap(),
-    mdx()
+    robotsTxt({
+      policy: [
+        {
+          userAgent: '*',
+          allow: '/',
+        },
+      ],
+    }),
+    sitemap({
+      options: {
+        limit: 50000, // 优化 sitemap 文件大小
+      },
+    }),
+    mdx(),
   ],
   vite: {
     build: {
       rollupOptions: {
         output: {
-          // 不再合并所有 JS 文件为一个文件
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
               if (id.includes('react')) return 'react-vendor';
               if (id.includes('@astro')) return 'astro-vendor';
               return 'vendor';
             }
+            if (id.includes('.mdx')) return 'mdx';
+            return 'app';
           },
           entryFileNames: 'js/[name].[hash].js',
           chunkFileNames: 'js/[name].[hash].js',
@@ -48,24 +72,36 @@ export default defineConfig({
           },
         },
       },
-      // 启用 minification 和 tree-shaking
       minify: 'terser',
       terserOptions: {
         compress: {
           drop_console: true,
+          drop_debugger: true,
+        },
+        mangle: {
+          properties: {
+            regex: /^__/,
+          },
         },
       },
+      treeshake: true,
+      strip: true,
     },
-    // 启用构建时优化
     optimizeDeps: {
       include: ['react', 'react-dom'],
+      exclude: ['@astrojs/*'], // 避免优化 Astro 核心依赖
     },
   },
-  
-  // 考虑添加图片优化集成
-  // import image from '@astrojs/image';
-  // integrations: [
-  //   // ... existing integrations ...
-  //   image(),
-  // ],
+  dev: {
+    hot: true,
+    client: {
+      logging: 'error', // 减少开发日志输出
+    },
+  },
+  prerender: {
+    crawl: true,
+    routes: [
+      '/**',
+    ],
+  },
 });
