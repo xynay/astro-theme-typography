@@ -51,7 +51,6 @@ export default defineConfig({
       terserOptions: {
         compress: {
           drop_console: true,
-          dropDebugger: true, // 移除调试语句
           pure_funcs: ['console.info'] // 保留特定日志
         },
         format: {
@@ -72,7 +71,4 @@ export default defineConfig({
     ],
   },
   // 服务端渲染缓存策略
-  ssr: {
-    maxAge: 3600, // 1小时静态页面缓存
-  }
 });
