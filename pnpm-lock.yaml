@@ -7261,7 +7261,7 @@ snapshots:
   volar-service-emmet@0.0.34(@volar/language-service@2.1.6):
     dependencies:
       '@vscode/emmet-helper': 2.9.2
-      vscode-html-languageservice: 5.1.2
+      vscode-html-languageservice: 5.2.0
     optionalDependencies:
       '@volar/language-service': 2.1.6
 
@@ -7275,7 +7275,7 @@ snapshots:
 
   volar-service-html@0.0.34(@volar/language-service@2.1.6):
     dependencies:
-      vscode-html-languageservice: 5.1.2
+      vscode-html-languageservice: 5.2.0
       vscode-languageserver-textdocument: 1.0.11
       vscode-uri: 3.0.8
     optionalDependencies:
