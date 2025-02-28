@@ -181,11 +181,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     data = s.recv(1024)
 
 print(f"接收到 {data!r}")
-Use code with caution.
-Python
-6.2 UDP Socket示例
-UDP服务器:
+```
 
+### 6.2 UDP Socket示例
+
+UDP服务器:
+```python
 import socket
 
 HOST = '127.0.0.1'
@@ -198,10 +199,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         data, addr = s.recvfrom(1024)
         print(f"从 {addr} 接收到 {data!r}")
         s.sendto(data, addr)
-Use code with caution.
-Python
+```
 UDP客户端:
-
+```python
 import socket
 
 HOST = '127.0.0.1'
@@ -211,15 +211,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
     s.sendto(b"你好, UDP!", (HOST, PORT))
     data, addr = s.recvfrom(1024)
     print(f"从 {addr} 接收到 {data!r}")
-Use code with caution.
-Python
-7. 安全注意事项
+```
+## 7. 安全注意事项
+
 TCP和UDP都容易受到各种安全威胁。 TCP连接可能被劫持，UDP流量可能被欺骗。 可以使用TLS/SSL（用于TCP）和DTLS（用于UDP）等安全措施来加密数据和验证端点。 防火墙配置和入侵检测系统对于防止网络攻击也至关重要。
 
-8. 结论
+## 8. 结论
 TCP/IP协议栈对于理解网络通信至关重要。 TCP和UDP在可靠性和速度之间提供了不同的权衡，使它们适用于各种应用程序。 了解它们的机制和安全影响对于构建健壮和安全的网络系统至关重要。
 
-9. 常见问题解答
+## 9. 常见问题解答
 端口和套接字有什么区别？
 端口是主机上用于通信的逻辑端点。 套接字是网络上运行的两个程序之间双向通信链路的端点。 套接字绑定到特定的端口。
 
