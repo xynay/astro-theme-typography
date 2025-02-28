@@ -53,14 +53,10 @@ export default defineConfig({
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
               if (id.includes('react')) return 'react-vendor';
-              // 将 smaller vendor files 打包到一起
-              if (/[\\/]node_modules[\\/](lodash|date-fns)[\\/]/.test(id)) {
-                  return 'vendor-small';
-              }
               return 'vendor';
             }
-            // 将 smaller hoisted 文件打包到 app
-            if (/[\\/]js[\\/]hoisted/.test(id)) {
+            // 精确匹配小文件
+            if (id.includes('js/hoisted.-sjXp2Du.js') || id.includes('js/hoisted.s7mnY6ba.js')|| id.includes('js/page.D2vptyfu.js') ) {
                 return 'app';
             }
             return 'app';
@@ -76,6 +72,8 @@ export default defineConfig({
             }
             return 'assets/[name].[hash][extname]';
           },
+           inlineDynamicImports: true, // 关键： 启用内联
+           assetInlineLimit: 2048,  //关键
         },
       },
       minify: 'terser',
