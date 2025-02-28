@@ -53,13 +53,9 @@ export default defineConfig({
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
               if (id.includes('react')) return 'react-vendor';
-              return 'vendor';
+              return 'app'; // 所有的 vendor 打包到一起
             }
-            // 精确匹配小文件
-            if (id.includes('js/hoisted.-sjXp2Du.js') || id.includes('js/hoisted.s7mnY6ba.js')|| id.includes('js/page.D2vptyfu.js') ) {
-                return 'app';
-            }
-            return 'app';
+            return 'app'; // 所有的代码全部打包到app
           },
           entryFileNames: 'js/[name].[hash].js',
           chunkFileNames: 'js/[name].[hash].js',
@@ -72,8 +68,8 @@ export default defineConfig({
             }
             return 'assets/[name].[hash][extname]';
           },
-          // inlineDynamicImports: true, // 移除这行
-          assetInlineLimit: 2048,  //关键
+          //  inlineDynamicImports: true, // 移除这行
+           assetInlineLimit: 2048,  //关键
         },
       },
       minify: 'terser',
