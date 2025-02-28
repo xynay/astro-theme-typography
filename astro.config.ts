@@ -53,9 +53,16 @@ export default defineConfig({
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
               if (id.includes('react')) return 'react-vendor';
-              return 'vendor'; // 合并 vendor 和 astro-vendor
+              // 将 smaller vendor files 打包到一起
+              if (/[\\/]node_modules[\\/](lodash|date-fns)[\\/]/.test(id)) {
+                  return 'vendor-small';
+              }
+              return 'vendor';
             }
-            if (id.includes('.mdx')) return 'mdx';
+            // 将 smaller hoisted 文件打包到 app
+            if (/[\\/]js[\\/]hoisted/.test(id)) {
+                return 'app';
+            }
             return 'app';
           },
           entryFileNames: 'js/[name].[hash].js',
