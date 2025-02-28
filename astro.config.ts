@@ -53,8 +53,7 @@ export default defineConfig({
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
               if (id.includes('react')) return 'react-vendor';
-              if (id.includes('@astro')) return 'astro-vendor';
-              return 'vendor';
+              return 'vendor'; // 合并 vendor 和 astro-vendor
             }
             if (id.includes('.mdx')) return 'mdx';
             return 'app';
