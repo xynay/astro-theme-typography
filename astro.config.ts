@@ -5,62 +5,102 @@ import robotsTxt from "astro-robots-txt";
 import sitemap from "@astrojs/sitemap";
 import mdx from "@astrojs/mdx";
 
-// 修复核心：隔离 Astro 运行时
 export default defineConfig({
   site: THEME_CONFIG.website,
-  prefetch: false,
+  prefetch: true,
   markdown: {
     shikiConfig: {
       theme: 'one-dark-pro',
-      langs: ['javascript', 'typescript', 'html', 'markdown'],
+      langs: ['javascript', 'typescript', 'html', 'markdown'], // 仅加载必要的语言支持
+      wrap: true,
+      highlight: {
+        strategy: 'inline', // 优化高亮性能
+      },
     },
   },
   integrations: [
     UnoCSS({
       injectReset: true,
-      layer: 'app'
+      layer: {
+        base: 'base',
+        components: 'components',
+        utils: 'utils',
+      },
+      variant: {
+        responsive: ['md', 'lg'],
+        state: ['hover', 'focus'],
+      },
     }),
-    robotsTxt({ policy: [{ userAgent: '*', allow: '/' }] }),
-    sitemap({ options: { limit: 50000 } }),
+    robotsTxt({
+      policy: [
+        {
+          userAgent: '*',
+          allow: '/',
+        },
+      ],
+    }),
+    sitemap({
+      options: {
+        limit: 50000, // 优化 sitemap 文件大小
+      },
+    }),
     mdx(),
   ],
   vite: {
     build: {
-      target: 'esnext',
-      cssCodeSplit: false,
       rollupOptions: {
-        preserveEntrySignatures: 'strict',
         output: {
           manualChunks: (id) => {
-            // 排除 astro 核心模块
-            if (/[\\/]node_modules[\\/](?!(astro|@astrojs))/.test(id)) {
-              return 'vendor';
+            if (id.includes('node_modules')) {
+              if (id.includes('react')) return 'react-vendor';
+              return 'app'; // 所有的 vendor 打包到一起
             }
-            // 强制分离 astro 运行时
-            if (id.includes('astro/dist/client')) {
-              return 'astro-runtime';
-            }
-            if (id.includes('src/')) {
-              return 'app';
-            }
+            return 'app'; // 所有的代码全部打包到app
           },
-          chunkFileNames: 'js/[name].[hash].js',
           entryFileNames: 'js/[name].[hash].js',
+          chunkFileNames: 'js/[name].[hash].js',
           assetFileNames: ({ name }) => {
-            return /\.css$/i.test(name ?? '') 
-              ? 'css/global.[hash][extname]' 
-              : 'assets/[name].[hash][extname]';
-          }
-        }
+            if (/\.css$/.test(name ?? '')) {
+              return 'css/[name].[hash][extname]';
+            }
+            if (/\.(png|jpe?g|gif|svg|webp|ico)$/.test(name ?? '')) {
+              return 'images/[name].[hash][extname]';
+            }
+            return 'assets/[name].[hash][extname]';
+          },
+          //  inlineDynamicImports: true, // 移除这行
+           assetInlineLimit: 2048,  //关键
+        },
       },
-      chunkSizeWarningLimit: 1000
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
+        mangle: {
+          properties: {
+            regex: /^__/,
+          },
+        },
+      },
+      treeshake: true,
+      strip: true,
     },
     optimizeDeps: {
       include: ['react', 'react-dom'],
-      exclude: ['astro'], // 关键修复：排除 astro 依赖
-      force: true
-    }
+    },
   },
-  dev: { client: { logging: 'error' } },
-  prerender: { crawl: true, routes: ['/**'] }
+  dev: {
+    hot: true,
+    client: {
+      logging: 'error', // 减少开发日志输出
+    },
+  },
+  prerender: {
+    crawl: true,
+    routes: [
+      '/**',
+    ],
+  },
 });
