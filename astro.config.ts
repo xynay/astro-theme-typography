@@ -51,11 +51,10 @@ export default defineConfig({
       rollupOptions: {
         output: {
           manualChunks: (id) => {
-            if (id.includes('node_modules')) {
-              if (id.includes('react')) return 'react-vendor';
-              return 'app'; // 所有的 vendor 打包到一起
-            }
-            return 'app'; // 所有的代码全部打包到app
+            // 合并所有依赖到 vendor
+            if (id.includes('node_modules')) return 'vendor';
+            // 合并业务代码和岛屿组件到 app
+            if (id.includes('src') || id.includes('astro/src/client')) return 'app';
           },
           entryFileNames: 'js/[name].[hash].js',
           chunkFileNames: 'js/[name].[hash].js',
