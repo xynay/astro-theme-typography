@@ -5,6 +5,7 @@ import robotsTxt from "astro-robots-txt";
 import sitemap from "@astrojs/sitemap";
 import mdx from "@astrojs/mdx";
 
+// 修复核心：隔离 Astro 运行时
 export default defineConfig({
   site: THEME_CONFIG.website,
   prefetch: false,
@@ -12,17 +13,14 @@ export default defineConfig({
     shikiConfig: {
       theme: 'one-dark-pro',
       langs: ['javascript', 'typescript', 'html', 'markdown'],
-      wrap: true,
     },
   },
   integrations: [
     UnoCSS({
       injectReset: true,
-      layer: 'app',
+      layer: 'app'
     }),
-    robotsTxt({
-      policy: [{ userAgent: '*', allow: '/' }],
-    }),
+    robotsTxt({ policy: [{ userAgent: '*', allow: '/' }] }),
     sitemap({ options: { limit: 50000 } }),
     mdx(),
   ],
@@ -34,46 +32,35 @@ export default defineConfig({
         preserveEntrySignatures: 'strict',
         output: {
           manualChunks: (id) => {
-            if (
-              /[\\/]node_modules[\\/](?!(astro|@astrojs))/.test(id)
-            ) {
+            // 排除 astro 核心模块
+            if (/[\\/]node_modules[\\/](?!(astro|@astrojs))/.test(id)) {
               return 'vendor';
             }
-            if (id.includes('astro/dist')) {
-              return 'astro';
+            // 强制分离 astro 运行时
+            if (id.includes('astro/dist/client')) {
+              return 'astro-runtime';
             }
             if (id.includes('src/')) {
               return 'app';
             }
           },
-          experimentalMinChunkSize: 20000,
           chunkFileNames: 'js/[name].[hash].js',
           entryFileNames: 'js/[name].[hash].js',
           assetFileNames: ({ name }) => {
-            if (/\.css$/i.test(name ?? '')) {
-              return 'css/global.[hash][extname]';
-            }
-            return 'assets/[name].[hash][extname]';
-          },
-        },
+            return /\.css$/i.test(name ?? '') 
+              ? 'css/global.[hash][extname]' 
+              : 'assets/[name].[hash][extname]';
+          }
+        }
       },
-      terserOptions: {
-        compress: { passes: 3 },
-      },
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 1000
     },
     optimizeDeps: {
       include: ['react', 'react-dom'],
-      force: true,
-    },
-  },
-  dev: { 
-    client: { 
-      logging: 'none' 
+      exclude: ['astro'], // 关键修复：排除 astro 依赖
+      force: true
     }
   },
-  prerender: {
-    crawl: true,
-    routes: ['/**'],
-  },
+  dev: { client: { logging: 'error' } },
+  prerender: { crawl: true, routes: ['/**'] }
 });
