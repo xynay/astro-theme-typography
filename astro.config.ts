@@ -11,21 +11,18 @@ export default defineConfig({
   markdown: {
     shikiConfig: {
       theme: 'one-dark-pro',
-      langs: ['javascript', 'typescript', 'html', 'markdown'], // 仅加载必要的语言支持
+      langs: ['javascript', 'typescript', 'html', 'markdown'],
       wrap: true,
       highlight: {
-        strategy: 'inline', // 优化高亮性能
+        strategy: 'inline',
       },
     },
   },
   integrations: [
     UnoCSS({
       injectReset: true,
-      layer: {
-        base: 'base',
-        components: 'components',
-        utils: 'utils',
-      },
+      // 关键修改：合并所有样式层
+      layer: 'global', // 删除原 base/components/utils 分层
       variant: {
         responsive: ['md', 'lg'],
         state: ['hover', 'focus'],
@@ -41,7 +38,7 @@ export default defineConfig({
     }),
     sitemap({
       options: {
-        limit: 50000, // 优化 sitemap 文件大小
+        limit: 50000,
       },
     }),
     mdx(),
@@ -53,22 +50,24 @@ export default defineConfig({
           manualChunks: (id) => {
             // 合并所有依赖到 vendor
             if (id.includes('node_modules')) return 'vendor';
-            // 合并业务代码和岛屿组件到 app
-            if (id.includes('src') || id.includes('astro/src/client')) return 'app';
+            // 合并 Astro 岛屿组件到主包
+            if (id.includes('astro/src/client')) return 'app';
+            // 合并业务代码到主包
+            if (id.includes('src/')) return 'app';
           },
+          // 强制合并小文件策略
+          experimentalMinChunkSize: 10240, // 10KB 以下强制合并
           entryFileNames: 'js/[name].[hash].js',
           chunkFileNames: 'js/[name].[hash].js',
           assetFileNames: ({ name }) => {
-            if (/\.css$/.test(name ?? '')) {
-              return 'css/[name].[hash][extname]';
-            }
+            // 合并所有 CSS
+            if (/\.css$/.test(name ?? '')) return 'css/global.[hash][extname]';
             if (/\.(png|jpe?g|gif|svg|webp|ico)$/.test(name ?? '')) {
               return 'images/[name].[hash][extname]';
             }
             return 'assets/[name].[hash][extname]';
           },
-          //  inlineDynamicImports: true, // 移除这行
-           assetInlineLimit: 2048,  //关键
+          assetInlineLimit: 2048,
         },
       },
       minify: 'terser',
@@ -93,7 +92,7 @@ export default defineConfig({
   dev: {
     hot: true,
     client: {
-      logging: 'error', // 减少开发日志输出
+      logging: 'error',
     },
   },
   prerender: {
