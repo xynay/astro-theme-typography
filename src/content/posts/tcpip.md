@@ -166,10 +166,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             if not data:
                 break
             conn.sendall(data)
-Use code with caution.
-Markdown
+```
 TCP客户端:
-
+```python
 import socket
 
 HOST = '127.0.0.1'  # 服务器的主机名或IP地址
