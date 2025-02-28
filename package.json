@@ -32,18 +32,18 @@
     "@types/sanitize-html": "^2.9.5",
     "@unocss/reset": "^0.59.0",
     "@unocss/transformer-directives": "^0.60.4",
-    "autoprefixer": "^10.4.17",  // 确保安装 autoprefixer
+    "autoprefixer": "^10.4.17",
     "bumpp": "^9.4.0",
     "changelogen": "^0.5.5",
     "consola": "^3.2.3",
-    "cross-env": "^7.0.3",    // 确保安装 cross-env
+    "cross-env": "^7.0.3",
     "esno": "^4.7.0",
     "markdown-it": "^14.1.0",
-    "postcss": "^8.4.35",      // 确保安装 postcss
-    "purgecss": "^6.1.4",  // 显式声明 purgecss 版本
+    "postcss": "^8.4.35",
+    "purgecss": "^6.1.4",
     "sanitize-html": "^2.11.0",
     "terser": "^5.31.6",
-    "tailwindcss": "^3.4.1",  // 确保安装 tailwindcss (如果需要)
+    "tailwindcss": "^3.4.1",
     "unocss": "^0.60.4"
   }
 }
