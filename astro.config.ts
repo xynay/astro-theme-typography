@@ -72,8 +72,8 @@ export default defineConfig({
             }
             return 'assets/[name].[hash][extname]';
           },
-           inlineDynamicImports: true, // 关键： 启用内联
-           assetInlineLimit: 2048,  //关键
+          // inlineDynamicImports: true, // 移除这行
+          assetInlineLimit: 2048,  //关键
         },
       },
       minify: 'terser',
