@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro check && astro dev",
     "preview": "astro preview",
-    "build": "astro check && astro build && cross-env NODE_ENV=production purgecss --config purgecss.config.js",
+    "build": "astro check && astro build && cross-env NODE_ENV=production purgecss --config purgecss.config.mjs",
     "release": "esno scripts/release.ts",
     "astro": "astro",
     "new-post": "esno scripts/new-post.ts",
