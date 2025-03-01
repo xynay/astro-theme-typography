@@ -11,8 +11,7 @@ interface Props {
   banner?: ImageMetadata
 }
 
-const { title: propsTitle, desc: propsDesc, banner } = Astro.props
-
+// Define the structure of the `config` object within `Astro.locals`
 interface Config {
   title?: string;
   desc?: string;
@@ -22,12 +21,16 @@ interface Config {
   };
 }
 
-const { config }: { config?: Config } = Astro.locals;
+// Safely extract `config` from `Astro.locals`, providing a default empty object
+const { config = {} }: { config?: Config } = Astro.locals;
 
-const configTitle = config?.title;
-const configDesc = config?.desc;
-const canonical = config?.website;
-const header = config?.header;
+// Safely access properties from the `config` object, using optional chaining
+const configTitle = config.title;
+const configDesc = config.desc;
+const canonical = config.website;
+const header = config.header;
+
+const { title: propsTitle, desc: propsDesc, banner } = Astro.props
 
 // 合并标题和描述，使用空字符串作为回退
 const title = propsTitle ?? configTitle ?? ''
@@ -54,7 +57,9 @@ async function getOptimizedImage(): Promise<string> {
   } catch (error) {
     console.error('Image processing failed:', error)
     optimizedImage = new URL('/placeholder.png', Astro.url).toString()
+    return optimizedImage
   }
+  return optimizedImage || '/placeholder.png'; // Ensure a return value
 }
 
 const optimizedImageSrc = await getOptimizedImage()
@@ -81,8 +86,8 @@ if (header?.twitter) {
   <head>
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="preload" href="~/styles/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-    <link rel="preload" href="~/styles/heti.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
+    <link rel="preload" href="/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
+    <link rel="preload" href="/heti.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
     <ViewTransitions />
     <SEO
       charset="utf-8"
