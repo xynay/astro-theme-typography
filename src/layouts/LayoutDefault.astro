@@ -76,6 +76,7 @@ if (header?.twitter) {
   <head>
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <link rel="stylesheet" href="/_@astro-renderers.Cgf4Dj1D.css">
     <ViewTransitions />
     <SEO
       charset="utf-8"
@@ -108,17 +109,5 @@ if (header?.twitter) {
 
       <Footer class="lg:hidden p-7.5" />
     </div>
-    <script>
-      function loadCSS(url: string) {
-        var link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = url;
-        document.head.appendChild(link);
-      }
-
-      window.onload = function() {
-        loadCSS("/_@astro-renderers.Cgf4Dj1D.css");
-      };
-    </script>
   </body>
 </html>
