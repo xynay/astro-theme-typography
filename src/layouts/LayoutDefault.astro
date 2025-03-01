@@ -9,9 +9,10 @@ import { SEO } from 'astro-seo'
 interface Props {
   title?: string
   desc?: string
+  [key: string]: any // 允许传递任何其他的属性
 }
 
-const { title: propsTitle, desc: propsDesc } = Astro.props
+const { title: propsTitle, desc: propsDesc, ...rest } = Astro.props
 const {
   config: {
     title: configTitle,
