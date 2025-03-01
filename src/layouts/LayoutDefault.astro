@@ -108,5 +108,17 @@ if (header?.twitter) {
 
       <Footer class="lg:hidden p-7.5" />
     </div>
+    <script>
+      function loadCSS(url) {
+        var link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = url;
+        document.head.appendChild(link);
+      }
+
+      window.onload = function() {
+        loadCSS("/_@astro-re…4Dj1D.css");
+      };
+    </script>
   </body>
 </html>
