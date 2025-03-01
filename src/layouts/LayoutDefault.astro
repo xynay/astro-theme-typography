@@ -60,7 +60,7 @@ const twitterMeta = [
   { name: 'twitter:image:src', content: optimizedImageSrc },
   { name: 'twitter:image:alt', content: desc },
   { name: 'twitter:title', content: title },
-  { name: 'twitter:description', content: desc },
+  { name: twitter:description', content: desc },
 ]
 
 // 仅在有效时添加创作者信息
@@ -93,8 +93,7 @@ if (header?.twitter) {
           url: canonical,
         }
       }}
-    />
-  </head>
+    </head>
   <body>
     <div class="container contain-layout m-a" un-max-lg="animate-fadein-down" un-lg="flex flex-row-reverse justify-between gap-4 px-8 mx-auto max-w-6xl">
       <aside un-lg="sticky top-0 h-screen py-20 animate-fadein-left gap-8" un-lg:flex="~ col justify-between items-start gap-4" class="p-7.5">
@@ -109,7 +108,7 @@ if (header?.twitter) {
       <Footer class="lg:hidden p-7.5" />
     </div>
     <script>
-      function loadCSS(url) {
+      function loadCSS(url: string) {
         fetch(url)
           .then(response => response.text())
           .then(css => {
