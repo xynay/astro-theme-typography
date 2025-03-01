@@ -20,8 +20,7 @@ const {
     desc: configDesc,
     website: canonical,
     header
-  }
-} = Astro.locals
+  } = Astro.locals
 
 // 合并标题和描述，使用空字符串作为回退
 const title = propsTitle ?? configTitle ?? ''
@@ -60,7 +59,7 @@ const twitterMeta = [
   { name: 'twitter:image:src', content: optimizedImageSrc },
   { name: 'twitter:image:alt', content: desc },
   { name: 'twitter:title', content: title },
-  { name: twitter:description', content: desc },
+  { name: 'twitter:description', content: desc },
 ]
 
 // 仅在有效时添加创作者信息
