@@ -1,6 +1,4 @@
 ---
-import '~/styles/index.css'
-import '~/styles/heti.min.css'
 import Header from '~/components/Header.astro'
 import Footer from '~/components/Footer.astro'
 import { ViewTransitions } from 'astro:transitions'
@@ -13,30 +11,14 @@ interface Props {
   banner?: ImageMetadata
 }
 
-interface Locals {
-  config?: {
-    title?: string;
-    desc?: string;
-    website?: string;
-    header?: {
-      twitter?: string;
-    };
-  };
-}
-
-declare global {
-  namespace App {
-    interface Locals extends Locals {}
-  }
-}
-
 const { title: propsTitle, desc: propsDesc, banner } = Astro.props
-const { config } = Astro.locals as { config?: { title?: string; desc?: string; website?: string; header?: { twitter?: string } } };
-
-const configTitle = config?.title;
-const configDesc = config?.desc;
-const canonical = config?.website;
-const header = config?.header;
+const {
+  config: {
+    title: configTitle,
+    desc: configDesc,
+    website: canonical,
+    header
+  } = Astro.locals // Provide a default value in case Astro.locals.config is undefined
 
 // 合并标题和描述，使用空字符串作为回退
 const title = propsTitle ?? configTitle ?? ''
@@ -63,7 +45,6 @@ async function getOptimizedImage(): Promise<string> {
   } catch (error) {
     console.error('Image processing failed:', error)
     optimizedImage = new URL('/placeholder.png', Astro.url).toString()
-    return optimizedImage
   }
 }
 
@@ -91,6 +72,8 @@ if (header?.twitter) {
   <head>
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <link rel="preload" href="~/styles/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
+    <link rel="preload" href="~/styles/heti.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
     <ViewTransitions />
     <SEO
       charset="utf-8"
@@ -109,34 +92,18 @@ if (header?.twitter) {
         }
       }}
     </head>
-  <body>
-    <div class="container contain-layout m-a" un-max-lg="animate-fadein-down" un-lg="flex flex-row-reverse justify-between gap-4 px-8 mx-auto max-w-6xl">
-      <aside un-lg="sticky top-0 h-screen py-20 animate-fadein-left gap-8" un-lg:flex="~ col justify-between items-start gap-4" class="p-7.5">
-        <Header />
-        <Footer class="max-lg:hidden" />
-      </aside>
+    <body>
+      <div class="container contain-layout m-a" un-max-lg="animate-fadein-down" un-lg="flex flex-row-reverse justify-between gap-4 px-8 mx-auto max-w-6xl">
+        <aside un-lg="sticky top-0 h-screen py-20 animate-fadein-left gap-8" un-lg:flex="~ col justify-between items-start gap-4" class="p-7.5">
+          <Header />
+          <Footer class="max-lg:hidden" />
+        </aside>
 
-      <main un-lg="py-20 min-w-xl animate-fadein-down" class="p-7.5">
-        <slot />
-      </main>
+        <main un-lg="py-20 min-w-xl animate-fadein-down" class="p-7.5">
+          <slot />
+        </main>
 
-      <Footer class="lg:hidden p-7.5" />
-    </div>
-    <script>
-      function loadCSS(url: string) {
-        fetch(url)
-          .then(response => response.text())
-          .then(css => {
-            var style = document.createElement("style");
-            style.textContent = css;
-            document.head.appendChild(style);
-          });
-      }
-
-      // 延迟一段时间后加载 CSS
-      setTimeout(() => {
-        loadCSS("/css/_@astro-renderers.Cgf4Dj1D.css");
-      }, 50); // 延迟 50 毫秒
-    </script>
-  </body>
+        <Footer class="lg:hidden p-7.5" />
+      </div>
+    </body>
 </html>
