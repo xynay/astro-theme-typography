@@ -20,8 +20,7 @@ const {
     desc: configDesc,
     website: canonical,
     header
-  }
-} = Astro.locals;
+  } = Astro.locals;
 
 // 合并标题和描述，使用空字符串作为回退
 const title = propsTitle ?? configTitle ?? ''
@@ -93,7 +92,8 @@ if (header?.twitter) {
           url: canonical,
         }
       }}
-    </head>
+    />
+  </head>
   <body>
     <div class="container contain-layout m-a" un-max-lg="animate-fadein-down" un-lg="flex flex-row-reverse justify-between gap-4 px-8 mx-auto max-w-6xl">
       <aside un-lg="sticky top-0 h-screen py-20 animate-fadein-left gap-8" un-lg:flex="~ col justify-between items-start gap-4" class="p-7.5">
