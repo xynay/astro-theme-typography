@@ -20,7 +20,8 @@ const {
     desc: configDesc,
     website: canonical,
     header
-  } = Astro.locals
+  }
+} = Astro.locals;
 
 // 合并标题和描述，使用空字符串作为回退
 const title = propsTitle ?? configTitle ?? ''
