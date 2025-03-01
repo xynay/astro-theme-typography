@@ -55,6 +55,15 @@ export default defineConfig({
               if (id.includes('react')) return 'react-vendor';
               return 'app'; // 所有的 vendor 打包到一起
             }
+            // CSS 代码分割 - 尝试按页面或组件分割
+            if (id.includes('src/pages')) {
+              const pageName = id.split('src/pages/')[1].split('/')[0];
+              return `page-${pageName}`;
+            }
+            if (id.includes('src/components')) {
+              const componentName = id.split('src/components/')[1].split('/')[0];
+              return `component-${componentName}`;
+            }
             return 'app'; // 所有的代码全部打包到app
           },
           entryFileNames: 'js/[name].[hash].js',
@@ -68,8 +77,7 @@ export default defineConfig({
             }
             return 'assets/[name].[hash][extname]';
           },
-          //  inlineDynamicImports: true, // 移除这行
-           assetInlineLimit: 2048,  //关键
+          assetInlineLimit: 2048,  //关键
         },
       },
       minify: 'terser',
