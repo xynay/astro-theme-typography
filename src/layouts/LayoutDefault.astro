@@ -76,7 +76,6 @@ if (header?.twitter) {
   <head>
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="stylesheet" href="/css/_@astro-renderers.Cgf4Dj1D.css" media="print" onload="this.media='all'">
     <ViewTransitions />
     <SEO
       charset="utf-8"
@@ -109,5 +108,21 @@ if (header?.twitter) {
 
       <Footer class="lg:hidden p-7.5" />
     </div>
+    <script>
+      function loadCSS(url) {
+        fetch(url)
+          .then(response => response.text())
+          .then(css => {
+            var style = document.createElement("style");
+            style.textContent = css;
+            document.head.appendChild(style);
+          });
+      }
+
+      // 延迟一段时间后加载 CSS
+      setTimeout(() => {
+        loadCSS("/css/_@astro-renderers.Cgf4Dj1D.css");
+      }, 50); // 延迟 50 毫秒
+    </script>
   </body>
 </html>
